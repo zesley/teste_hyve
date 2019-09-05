@@ -17,12 +17,18 @@ public class Compressor {
     List<Integer> sub = new ArrayList<>();
     for (Integer i : data) {
       if (!result.contains(i)) {
+        checkSub(sub, result, data);
         result.add(0);
         result.add(i);
       } else {
         sub.add(i);
       }
     }
+    checkSub(sub, result, data);
+    return result;
+  }
+
+  private static void checkSub(List<Integer> sub, List<Integer> result, List<Integer> data) {
     if (sub.size() > 0) {
       List<Integer> lasts = new ArrayList<>();
       while(sub.size() > 0) {
@@ -31,24 +37,26 @@ public class Compressor {
             lasts.add(sub.remove(index));
           } else {
             int indexLast = result.indexOf(lasts.get(0));
-            int indexActual = result.indexOf(sub.get(index));
-            if (indexLast + lasts.size() == indexActual) {
+            if (result.get(indexLast + lasts.size()) == sub.get(index)) {
               lasts.add(sub.get(index));
             } else {
-              sub.removeAll(lasts);
-              result.add(indexLast);
+              for (Integer last : lasts)
+                sub.remove(last);
+              result.add(result.size() - indexLast - 1);
               result.add(lasts.size());
               lasts.clear();
-              lasts.add(sub.get(index));
+              if (sub.size() > 0)
+                lasts.add(sub.get(0));
             }
           }
         }
+      }
+      if (lasts.size() > 0) {
         int indexLast = result.indexOf(lasts.get(0));
-        result.add(indexLast + 1);
+        result.add(result.size() - indexLast);
         result.add(lasts.size());
       }
     }
-    return result;
   }
 
   public static List<Integer> uncompress(List<Integer> bytes) {

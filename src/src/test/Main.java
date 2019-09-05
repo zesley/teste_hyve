@@ -34,23 +34,23 @@ public class Main {
       e.printStackTrace();
     }
 
-    // System.out.println("\nIN");
-    // for (Integer i : bytes)
-    // System.out.print(i);
+     System.out.println("\nIN");
+     for (Integer i : bytes)
+       System.out.print(i);
 
     List<Integer> result = Compressor.uncompress(bytes);
 
-    // System.out.println("\nExtract");
-    // for (Integer i : result)
-    // System.out.print(i);
+     System.out.println("\nExtract");
+     for (Integer i : result)
+     System.out.print(i);
 
     result = Compressor.compress(isTrivial, result);
 
-    // System.out.println("\nCOMPRESSED");
-    // for (Integer i : result)
-    // System.out.print(i);
+     System.out.println("\nCOMPRESSED");
+     for (Integer i : result)
+     System.out.print(i);
 
-    // System.out.println("\nFinal Result");
+     System.out.println("\nFinal Result");
     for (Integer i : result)
       System.out.print(String.format("%02X ", i));
   }
