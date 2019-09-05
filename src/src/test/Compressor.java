@@ -4,8 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Compressor {
-  public static List<Integer> compress(List<Integer> data) {
+  public static List<Integer> compress(boolean isTrivial, List<Integer> data) {
     List<Integer> result = new ArrayList<>();
+    if (isTrivial) {
+      for (Integer i : data) {
+        result.add(0);
+        result.add(i);
+      }
+      return result;
+    }
+
     List<Integer> sub = new ArrayList<>();
     for (Integer i : data) {
       if (!result.contains(i)) {
@@ -43,7 +51,7 @@ public class Compressor {
     return result;
   }
 
-  public static List<Integer> uncompress(boolean isTrivial, List<Integer> bytes) {
+  public static List<Integer> uncompress(List<Integer> bytes) {
     List<Integer> result = new ArrayList<>();
     for (int i = 0; i < bytes.size(); i+=2) {
       if (bytes.get(i) == 0) {
@@ -54,11 +62,7 @@ public class Compressor {
         if (begin >= 0) {
           result.addAll(result.subList(begin, end));
         } else {
-          if (isTrivial) {
-            result.add(0x3F);
-          } else {
-            System.err.println();
-          }
+          result.add(0x3F);
         }
       }
     }

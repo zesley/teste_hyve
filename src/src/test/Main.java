@@ -1,54 +1,57 @@
 package src.test;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 public class Main {
-  public static void main (String [] args) {
+  public static void main(String[] args) {
+    boolean isTrivial = false;
+    Map<String, String> env = System.getenv();
+    for (String envName : env.keySet())
+      if (envName.equals("USE_TRIVIAL_IMPLEMENTATION") && env.get(envName) == "1")
+        isTrivial = true;
+
+    List<Integer> bytes = new ArrayList<>();
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    String s;
     try {
-      File fIn = new File("/media/dados/Downloads/input.bin");
-      byte[] bytes = new byte[(int) fIn.length()];
-      DataInputStream dis = new DataInputStream(new FileInputStream(fIn));
-      dis.readFully(bytes);
-      dis.close();
-      byte[] out = new byte[bytes.length];
-      for (int i = 0; i < bytes.length; i++) {
-        out[i] = (byte)(bytes[i] + 1);
-        System.out.println(String.format("%02X %02X", bytes[i], out[i]));
+      while ((s = br.readLine()) != null) {
+        String[] b = s.split(" ");
+        for (String x : b)
+          if (x != null && !x.isEmpty()) {
+            bytes.add(Integer.parseInt(x, 16));
+            // System.out.print(x);
+          }
+        if (bytes.size() > 0)
+          break;
       }
-      File fOut = new File("/media/dados/Downloads/output.bin");
-      if (fOut.exists())
-        fOut.delete();
-      DataOutputStream dos = new DataOutputStream(new FileOutputStream(fOut));
-      dos.write(out, 0, bytes.length);
-      dos.flush();
-      dos.close();
-
-      File fCheck = new File("/media/dados/Downloads/output.bin");
-      bytes = new byte[(int) fCheck.length()];
-      dis = new DataInputStream(new FileInputStream(fCheck));
-      dis.readFully(bytes);
-      dis.close();
-      for (int i = 0; i < bytes.length; i++) {
-        System.out.println(String.format("%02X", bytes[i]));
-      }
-
-      Scanner s = new Scanner(System.in);
-      //while (s.hasNextByte()) {
-      while (s.hasNext()) {
-        //byte b = s.nextByte();
-        System.out.println(String.format("%02X", Byte.decode(s.next())));
-      }
-      s.close();
-      System.out.println("finished");
-    } catch (Exception e) {
+      br.close();
+    } catch (IOException e) {
       e.printStackTrace();
-      System.err.println(e.getMessage());
-      System.exit(-1);
     }
+
+    // System.out.println("\nIN");
+    // for (Integer i : bytes)
+    // System.out.print(i);
+
+    List<Integer> result = Compressor.uncompress(bytes);
+
+    // System.out.println("\nExtract");
+    // for (Integer i : result)
+    // System.out.print(i);
+
+    result = Compressor.compress(isTrivial, result);
+
+    // System.out.println("\nCOMPRESSED");
+    // for (Integer i : result)
+    // System.out.print(i);
+
+    // System.out.println("\nFinal Result");
+    for (Integer i : result)
+      System.out.print(String.format("%02X ", i));
   }
 }
